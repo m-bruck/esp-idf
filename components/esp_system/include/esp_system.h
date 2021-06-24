@@ -253,6 +253,31 @@ esp_err_t esp_read_mac(uint8_t* mac, esp_mac_type_t type);
 esp_err_t esp_derive_local_mac(uint8_t* local_mac, const uint8_t* universal_mac);
 
 /**
+ * @brief Callback to customize MAC addresses.
+ *
+ * @param  mac  MAC address of the interface, length: 6 bytes.
+ * @param  type  type of MAC address, 0:wifi station, 1:wifi softap, 2:bluetooth, 3:ethernet.
+ *
+ * @return ESP_OK to override the default MAC address
+ *         ESP_ERR_NOT_FOUND to use the default MAC address
+ */
+typedef esp_err_t (*esp_mac_addr_callback_t)(uint8_t* mac, esp_mac_type_t type);
+
+/**
+  * @brief Register callback to customize MAC addresses reported by esp_read_mac()
+  *
+  * This function registers a callback that is called by esp_read_mac().
+  * If the callback writes a value in the mac parameter and returns with ERR_OK 
+  * esp_read_mac() will return immediately with that MAC address. If the callback
+  * returns ESP_ERR_NOT_FOUND or any other error esp_read_mac() will use its
+  * standard algorithms to determine a MAC address. 
+  *
+  * @param  handler  Pointer to handler or NULL to reset handler.
+  *
+  */
+void esp_register_mac_addr_callback(esp_mac_addr_callback_t callback);
+
+/**
  * @brief Trigger a software abort
  *
  * @param details Details that will be displayed during panic handling.
