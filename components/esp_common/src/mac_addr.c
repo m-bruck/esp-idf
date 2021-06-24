@@ -31,6 +31,9 @@
 static const char* TAG = "system_api";
 
 static uint8_t base_mac_addr[6] = { 0 };
+#if CONFIG_ESP_MAC_ADDR_CALLBACK
+static esp_mac_addr_callback_t esp_mac_addr_callback;
+#endif
 
 esp_err_t esp_base_mac_addr_set(const uint8_t *mac)
 {
@@ -151,6 +154,13 @@ esp_err_t esp_read_mac(uint8_t* mac, esp_mac_type_t type)
         return ESP_ERR_INVALID_ARG;
     }
 
+#if CONFIG_ESP_MAC_ADDR_CALLBACK
+    if (esp_mac_addr_callback != NULL) {
+        if (esp_mac_addr_callback(mac, type) == ESP_OK)
+            return ESP_OK;
+    }
+#endif
+
     // if base mac address is not set, read one from EFUSE and then write back
     if (esp_base_mac_addr_get(efuse_mac) != ESP_OK) {
         ESP_LOGI(TAG, "read default base MAC address from EFUSE");
@@ -207,3 +217,10 @@ esp_err_t esp_read_mac(uint8_t* mac, esp_mac_type_t type)
 
     return ESP_OK;
 }
+
+#if CONFIG_ESP_MAC_ADDR_CALLBACK
+void esp_register_mac_addr_callback(esp_mac_addr_callback_t callback)
+{
+    esp_mac_addr_callback = callback;
+}
+#endif
