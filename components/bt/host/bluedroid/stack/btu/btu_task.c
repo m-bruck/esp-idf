@@ -249,6 +249,11 @@ bool btu_task_post(uint32_t sig, void *param, uint32_t timeout)
     return status;
 }
 
+bool btu_task_post_direct(osi_thread_func_t func, void * context, uint32_t timeout)
+{
+    return osi_thread_post(btu_thread, func, context, 0, timeout);
+}
+
 void btu_task_start_up(void *param)
 {
     UNUSED(param);

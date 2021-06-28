@@ -295,6 +295,7 @@ void btu_task_shut_down(void);
 UINT16 BTU_BleAclPktSize(void);
 
 bool btu_task_post(uint32_t sig, void *param, uint32_t timeout);
+bool btu_task_post_direct(osi_thread_func_t func, void * context, uint32_t timeout);
 
 int get_btu_work_queue_size(void);
 
